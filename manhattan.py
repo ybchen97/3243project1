@@ -93,7 +93,7 @@ class Puzzle(object):
                     manhattan_distance += abs(self.size - 1 - j) + abs(self.size - 1 - i)
                 else:
                     x_change = abs( (grid[i][j] - 1) % self.size - j)
-                    y_change = abs( (grid[i][j] - 1) / self.size - i)
+                    y_change = abs( (grid[i][j] - 1) // self.size - i)
                     manhattan_distance += x_change + y_change
         return manhattan_distance
 

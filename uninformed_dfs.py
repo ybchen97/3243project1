@@ -3,7 +3,6 @@ import sys
 import copy
 import random
 import math
-import queue
 
 class Puzzle(object):
     def __init__(self, init_state, goal_state):
@@ -16,8 +15,7 @@ class Puzzle(object):
     def solve(self):
         #TODO
         # implement your search algorithm here
-        frontier = queue.Queue() # use a linked list instead of array
-        frontier.enqueue(self.init_state)
+        frontier_stack = [self.init_state] # use a stack instead of queue for DFS
         frontier_set = set([self.init_state])
         visited = set()
         parent = {self.init_state: (None, None)} #(prev_state, direction)
@@ -25,8 +23,8 @@ class Puzzle(object):
         if self.init_state == self.goal_state:
             reached_goal = True
 
-        while not frontier.isEmpty() and not reached_goal:
-            current_state = frontier.dequeue()
+        while len(frontier_stack) > 0 and not reached_goal:
+            current_state = frontier_stack.pop(-1)
             frontier_set.remove(current_state)
             visited.add(current_state)
             position = self.get_zero(current_state)
@@ -40,7 +38,7 @@ class Puzzle(object):
                         reached_goal = True
                         break
 
-                    frontier.enqueue(new_state)    
+                    frontier_stack.append(new_state)
                     frontier_set.add(new_state)
 
         final_answer = []

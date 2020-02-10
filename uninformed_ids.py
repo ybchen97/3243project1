@@ -3,7 +3,6 @@ import sys
 import copy
 import random
 import math
-import queue
 
 class Puzzle(object):
     def __init__(self, init_state, goal_state):
@@ -16,8 +15,7 @@ class Puzzle(object):
     def solve(self):
         #TODO
         # implement your search algorithm here
-        frontier = queue.Queue() # use a linked list instead of array
-        frontier.enqueue(self.init_state)
+        frontier_stack = [self.init_state]
         frontier_set = set([self.init_state])
         visited = set()
         parent = {self.init_state: (None, None)} #(prev_state, direction)
@@ -25,23 +23,34 @@ class Puzzle(object):
         if self.init_state == self.goal_state:
             reached_goal = True
 
-        while not frontier.isEmpty() and not reached_goal:
-            current_state = frontier.dequeue()
-            frontier_set.remove(current_state)
-            visited.add(current_state)
-            position = self.get_zero(current_state)
-            for a in self.actions:
-                new_state = self.move(current_state, a, position)
-                if new_state != None and new_state not in visited and new_state not in frontier_set:
-                    parent[new_state] = (current_state, a)
+        def dls(current_state, depth):
+            nonlocal visited
+            nonlocal reached_goal
+            nonlocal parent
+            if depth != 0 and not reached_goal:
+                visited.add(current_state)
+                position = self.get_zero(current_state)
+                for a in self.actions:
+                    new_state = self.move(current_state, a, position)
+                    if new_state != None and new_state not in visited:
+                        parent[new_state] = (current_state, a)
+                        if new_state  == self.goal_state:
+                            reached_goal = True
+                            return
+                        else:
+                            dls(new_state, depth - 1)    
+            else:
+                return                
 
-                    # check goal state here to skip processing of nodes in queue
-                    if new_state  == self.goal_state:
-                        reached_goal = True
-                        break
-
-                    frontier.enqueue(new_state)    
-                    frontier_set.add(new_state)
+        # IDS loop. 50 is arbitrarily decided, can be any reasonable number.
+        for depth in range(50):
+            if not reached_goal:
+                # reset visited and parent for different depths
+                visited = set()
+                parent = {self.init_state: (None, None)}
+                dls(self.init_state, depth)
+            else:
+                break    
 
         final_answer = []
         backtrack_state = self.goal_state

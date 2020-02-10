@@ -1,7 +1,5 @@
-# Python3 program to demonstrate linked list 
-# based implementation of queue 
   
-# A linked list (LL) node 
+# A linked list node
 # to store a queue entry 
 class Node: 
       
@@ -9,10 +7,8 @@ class Node:
         self.data = data 
         self.next = None
   
-# A class to represent a queue 
-  
-# The queue, front stores the front node 
-# of LL and rear stores the last node of LL 
+# The front of the queue stores the front node
+# of linked list and rear stores the last node of linked list
 class Queue: 
       
     def __init__(self): 
@@ -21,7 +17,6 @@ class Queue:
     def isEmpty(self): 
         return self.front == None
       
-    # Method to add an item to the queue 
     def enqueue(self, item):
         temp = Node(item) 
           
@@ -31,7 +26,6 @@ class Queue:
         self.rear.next = temp 
         self.rear = temp 
   
-    # Method to remove an item from queue 
     def dequeue(self):
           
         if self.isEmpty(): 
