@@ -27,8 +27,10 @@ class Puzzle(object):
         visited = {self.init_state: initial_evaluation}
         parent = {self.init_state: (None, None)} #(prev_state, direction)
         reached_goal = False
+        if self.init_state == self.goal_state:
+            reached_goal = True
 
-        while len(frontier) > 0:
+        while len(frontier) > 0 and not reached_goal:
             # Removes the current node
             current_node = heapq.heappop(frontier)
             current_state = current_node[1]
@@ -53,9 +55,6 @@ class Puzzle(object):
 
                             visited[new_state] = evaluation_cost
                             heapq.heappush(frontier, (evaluation_cost, new_state, actual_cost))
-                    
-                if reached_goal:
-                    break
 
         final_answer = []
         backtrack_state = self.goal_state
