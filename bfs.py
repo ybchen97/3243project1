@@ -2,73 +2,85 @@ import os
 import sys
 import copy
 import random
+import math
 
 
 class Puzzle(object):
     def __init__(self, init_state, goal_state):
         # you may add more attributes if you think is useful
-        self.init_state = init_state
-        self.goal_state = goal_state
+        self.init_state = self.stringify(init_state)
+        self.goal_state = self.stringify(goal_state)
         self.actions = ["DOWN", "UP", "RIGHT", "LEFT"]
-        self.size = len(init_state)
+        self.size = int(math.sqrt(len(self.init_state)))
 
     def solve(self):
         #TODO
         # implement your search algorithm here
         frontier = [self.init_state]
-        frontier_set = set((str(self.init_state),))
+        frontier_set = set([self.init_state])
         visited = set()
-        parent = {str(self.init_state): (None, None)} #(prev_state, direction)
+        parent = {self.init_state: (None, None)} #(prev_state, direction)
         while len(frontier) > 0:
             current_state = frontier.pop(0)
-            frontier_set.remove(str(current_state))
-            if current_state == goal_state:
-                break
-            visited.add(str(current_state))
-            x, y = self.get_zero(current_state)
+            frontier_set.remove(current_state)
+            visited.add(current_state)
+            position = self.get_zero(current_state)
 
-            random.shuffle(self.actions)
+            reached_goal = False
             for a in self.actions:
-                new_state = self.move(current_state, a, x, y)
-                if new_state != None and str(new_state) not in visited and str(new_state) not in frontier_set:
+                new_state = self.move(current_state, a, position)
+                if new_state != None and new_state not in visited and new_state not in frontier_set:
+                    parent[new_state] = (current_state, a)
+
+                    # check goal state here to skip processing of nodes in queue
+                    if new_state  == self.goal_state:
+                        reached_goal = True
+                        break
+
                     frontier.append(new_state)
-                    frontier_set.add(str(new_state))
-                    parent[str(new_state)] = (current_state, a)
+                    frontier_set.add(new_state)
+
+            if reached_goal:
+                break
 
         final_answer = []
         backtrack_state = self.goal_state
-        while str(backtrack_state) in parent and backtrack_state != self.init_state:
-            final_answer.insert(0, parent[str(backtrack_state)][1])
-            backtrack_state = parent[str(backtrack_state)][0]
+        while backtrack_state in parent and backtrack_state != self.init_state:
+            final_answer.insert(0, parent[backtrack_state][1])
+            backtrack_state = parent[backtrack_state][0]
 
-        print(len(visited))
-        return ['UNSOLVABLE'] if len(final_answer) == 0 else final_answer
+        print("Length of visited: {0}".format(len(visited)))
+        return ['UNSOLVABLE'] if reached_goal else final_answer
 
     # you may add more functions if you think is useful
-    def move(self, grid, dir, x, y):
-        new_state = copy.deepcopy(grid)
-        if dir == "DOWN" and x > 0:
-            new_state[x][y], new_state[x - 1][y] = new_state[x - 1][y], 0
-        elif dir == "UP" and x < self.size - 1:
-            new_state[x][y], new_state[x + 1][y] = new_state[x + 1][y], 0
-        elif dir == "RIGHT" and y > 0:
-            new_state[x][y], new_state[x][y - 1] = new_state[x][y - 1], 0
-        elif dir == "LEFT" and y < self.size - 1:
-            new_state[x][y], new_state[x][y + 1] = new_state[x][y + 1], 0
+    def stringify(self, grid):
+        # 65 == A, 0 -> A, 1 -> B ...
+        state = ""
+        for i in range(len(grid)):
+            state += "".join([chr(j + 65) for j in grid[i]])
+        return state
+
+    def move(self, state, dir, pos):
+        new_state = list(state)
+        if dir == "DOWN" and pos > (self.size - 1):
+            new_state[pos], new_state[pos - self.size] = new_state[pos - self.size], new_state[pos]
+            new_state = "".join(new_state)
+        elif dir == "UP" and pos < (len(state) - self.size):
+            new_state[pos], new_state[pos + self.size] = new_state[pos + self.size], new_state[pos]
+            new_state = "".join(new_state)
+        elif dir == "RIGHT" and (pos % self.size) != 0:
+            new_state[pos], new_state[pos - 1] = new_state[pos - 1], new_state[pos]
+            new_state = "".join(new_state)
+        elif dir == "LEFT" and (pos % self.size) != (self.size - 1):
+            new_state[pos], new_state[pos + 1] = new_state[pos + 1], new_state[pos]
+            new_state = "".join(new_state)
         else:
             return None
+
         return new_state
 
     def get_zero(self, grid):
-        x, y = None, None
-        for i in range(self.size):
-            for j in range(self.size):
-                if grid[i][j] == 0:
-                    x, y = i, j
-                    break
-            if x != None:
-                break
-        return x, y
+        return grid.index("A")
         
 
 if __name__ == "__main__":
