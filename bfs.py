@@ -2,7 +2,7 @@ import os
 import sys
 import copy
 import random
-
+from queue import *
 
 class Puzzle(object):
     def __init__(self, init_state, goal_state):
@@ -15,12 +15,15 @@ class Puzzle(object):
     def solve(self):
         #TODO
         # implement your search algorithm here
-        frontier = [self.init_state]
+        # frontier = [self.init_state]
+        frontier = Queue()
+        frontier.enqueue(self.init_state)
         frontier_set = set((str(self.init_state),))
         visited = set()
         parent = {str(self.init_state): (None, None)} #(prev_state, direction)
-        while len(frontier) > 0:
-            current_state = frontier.pop(0)
+        #while len(frontier) > 0:
+        while not frontier.isEmpty():
+            current_state = frontier.dequeue()
             frontier_set.remove(str(current_state))
             if current_state == goal_state:
                 break
@@ -31,7 +34,8 @@ class Puzzle(object):
             for a in self.actions:
                 new_state = self.move(current_state, a, x, y)
                 if new_state != None and str(new_state) not in visited and str(new_state) not in frontier_set:
-                    frontier.append(new_state)
+                    #frontier.append(new_state)
+                    frontier.enqueue(new_state)
                     frontier_set.add(str(new_state))
                     parent[str(new_state)] = (current_state, a)
 
