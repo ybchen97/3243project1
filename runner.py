@@ -42,10 +42,14 @@ start = time.time()
 print("Running {filename} on {size}x{size} puzzle with input_{n}.txt".format(filename=filename, size=puzzle_size, n=input_num))
 subprocess.call(["python", filename, input_path, output_file])
 end = time.time()
-print("Completed.\nDuration: {0}".format(round(end-start, 2)))
+print("Completed.\nDuration: {0} seconds".format(round(end-start, 2)))
 
 # option to run solver to check for correctness
 if (input_num != "1"):
+    cat = subprocess.Popen(('cat', output_file), stdout=subprocess.PIPE)
+    length = subprocess.check_output(('wc', '-l'), stdin=cat.stdout)
+    cat.wait()
+    print("Solution length: " + str(length).strip())
     run_solver = raw_input("Run solver.py? (y/n)\n")
     if (run_solver == "y"):
         subprocess.call(["python", "solver.py", input_path, output_file])
