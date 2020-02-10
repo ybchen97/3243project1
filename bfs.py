@@ -23,18 +23,25 @@ class Puzzle(object):
         while len(frontier) > 0:
             current_state = frontier.pop(0)
             frontier_set.remove(current_state)
-            if current_state == self.goal_state:
-                break
             visited.add(current_state)
             position = self.get_zero(current_state)
 
-            #random.shuffle(self.actions)
+            reached_goal = False
             for a in self.actions:
                 new_state = self.move(current_state, a, position)
                 if new_state != None and new_state not in visited and new_state not in frontier_set:
+                    parent[new_state] = (current_state, a)
+
+                    # check goal state here to skip processing of nodes in queue
+                    if new_state  == self.goal_state:
+                        reached_goal = True
+                        break
+
                     frontier.append(new_state)
                     frontier_set.add(new_state)
-                    parent[new_state] = (current_state, a)
+
+            if reached_goal:
+                break
 
         final_answer = []
         backtrack_state = self.goal_state
@@ -43,7 +50,7 @@ class Puzzle(object):
             backtrack_state = parent[backtrack_state][0]
 
         print("Length of visited: {0}".format(len(visited)))
-        return ['UNSOLVABLE'] if len(final_answer) == 0 else final_answer
+        return ['UNSOLVABLE'] if reached_goal else final_answer
 
     # you may add more functions if you think is useful
     def stringify(self, grid):
