@@ -20,13 +20,16 @@ class Puzzle(object):
         frontier_set = set([self.init_state])
         visited = set()
         parent = {self.init_state: (None, None)} #(prev_state, direction)
-        while len(frontier) > 0:
+        reached_goal = False
+        if self.init_state == self.goal_state:
+            reached_goal = True
+
+        while len(frontier) > 0 and not reached_goal:
             current_state = frontier.pop(0)
             frontier_set.remove(current_state)
             visited.add(current_state)
             position = self.get_zero(current_state)
 
-            reached_goal = False
             for a in self.actions:
                 new_state = self.move(current_state, a, position)
                 if new_state != None and new_state not in visited and new_state not in frontier_set:
@@ -40,9 +43,6 @@ class Puzzle(object):
                     frontier.append(new_state)
                     frontier_set.add(new_state)
 
-            if reached_goal:
-                break
-
         final_answer = []
         backtrack_state = self.goal_state
         while backtrack_state in parent and backtrack_state != self.init_state:
@@ -50,7 +50,7 @@ class Puzzle(object):
             backtrack_state = parent[backtrack_state][0]
 
         print("Length of visited: {0}".format(len(visited)))
-        return ['UNSOLVABLE'] if reached_goal else final_answer
+        return ['UNSOLVABLE'] if not reached_goal else final_answer
 
     # you may add more functions if you think is useful
     def stringify(self, grid):
