@@ -3,98 +3,110 @@ import sys
 import copy
 import random
 import heapq
+import math
 
 
 class Puzzle(object):
     def __init__(self, init_state, goal_state):
         # you may add more attributes if you think is useful
-        self.init_state = init_state
-        self.goal_state = goal_state
+        self.init_state = self.stringify(init_state)
+        self.goal_state = self.stringify(goal_state)
         self.actions = ["DOWN", "UP", "RIGHT", "LEFT"]
-        self.size = len(init_state)
+        self.size = int(math.sqrt(len(self.init_state)))
 
     def solve(self):
         #TODO
         # implement your search algorithm here
         initial_evaluation = self.calculate_evaluation_function(self.init_state, 0)
+
         # Frontier nodes stored as (evaluation_cost, current_state, actual_cost) 
         frontier = [(initial_evaluation, self.init_state, 0)] 
+
         # Visited stores a key-value pair, with the key being the state of the grid and value being the current lowest 
         # value calculated by the evaluation function
-        visited = {str(self.init_state): initial_evaluation}
-        parent = {str(self.init_state): (None, None)} #(prev_state, direction)
+        visited = {self.init_state: initial_evaluation}
+        parent = {self.init_state: (None, None)} #(prev_state, direction)
+        reached_goal = False
 
         while len(frontier) > 0:
             # Removes the current node
             current_node = heapq.heappop(frontier)
             current_state = current_node[1]
-            current_state_string= str(current_state)
-            # Checks if the current node has the updated lower evaluation value
-            if (current_state_string in visited and visited[current_state_string] == current_node[0]) :
-                if current_state == goal_state:
-                    break  
-                x, y = self.get_zero(current_state)
 
-                random.shuffle(self.actions)
+            # Checks if the current node has the updated lower evaluation value
+            if (current_state in visited and visited[current_state] == current_node[0]) :
+                position = self.get_zero(current_state)
+
                 for a in self.actions:
-                    new_state = self.move(current_state, a, x, y)
+                    new_state = self.move(current_state, a, position)
                     if new_state != None:
                         actual_cost = current_node[2] + 1 # Updates the actual cost required to get to current node
                         evaluation_cost = self.calculate_evaluation_function(new_state, actual_cost)
-                        new_state_string = str(new_state)
-                        if (new_state_string in visited and evaluation_cost < visited[new_state_string]) or (new_state_string not in visited):
+                        if (new_state in visited and evaluation_cost < visited[new_state]) or (new_state not in visited):
                             # Node is only added into the frontier if the new evaluation cost is lower or has not been visited
-                            visited[new_state_string] = evaluation_cost
+                            parent[new_state] = (current_state, a)
+
+                            # check goal state here to skip processing of nodes in queue
+                            if new_state == self.goal_state:
+                                reached_goal = True
+                                break
+
+                            visited[new_state] = evaluation_cost
                             heapq.heappush(frontier, (evaluation_cost, new_state, actual_cost))
-                            parent[str(new_state)] = (current_state, a)
                     
+                if reached_goal:
+                    break
 
         final_answer = []
         backtrack_state = self.goal_state
-        while str(backtrack_state) in parent and backtrack_state != self.init_state:
-            final_answer.insert(0, parent[str(backtrack_state)][1])
-            backtrack_state = parent[str(backtrack_state)][0]
+        while backtrack_state in parent and backtrack_state != self.init_state:
+            final_answer.insert(0, parent[backtrack_state][1])
+            backtrack_state = parent[backtrack_state][0]
 
-        print(len(visited))
-        return ['UNSOLVABLE'] if len(final_answer) == 0 else final_answer
+        print("Length of visited: {0}".format(len(visited)))
+        return ['UNSOLVABLE'] if not reached_goal else final_answer
 
     # you may add more functions if you think is useful
-    def move(self, grid, dir, x, y):
-        new_state = copy.deepcopy(grid)
-        if dir == "DOWN" and x > 0:
-            new_state[x][y], new_state[x - 1][y] = new_state[x - 1][y], 0
-        elif dir == "UP" and x < self.size - 1:
-            new_state[x][y], new_state[x + 1][y] = new_state[x + 1][y], 0
-        elif dir == "RIGHT" and y > 0:
-            new_state[x][y], new_state[x][y - 1] = new_state[x][y - 1], 0
-        elif dir == "LEFT" and y < self.size - 1:
-            new_state[x][y], new_state[x][y + 1] = new_state[x][y + 1], 0
+    def stringify(self, grid):
+        # 65 == A, 0 -> A, 1 -> B ...
+        state = ""
+        for i in range(len(grid)):
+            state += "".join([chr(j + 65) for j in grid[i]])
+        return state
+
+    def move(self, state, dir, pos):
+        new_state = list(state)
+        if dir == "DOWN" and pos > (self.size - 1):
+            new_state[pos], new_state[pos - self.size] = new_state[pos - self.size], new_state[pos]
+            new_state = "".join(new_state)
+        elif dir == "UP" and pos < (len(state) - self.size):
+            new_state[pos], new_state[pos + self.size] = new_state[pos + self.size], new_state[pos]
+            new_state = "".join(new_state)
+        elif dir == "RIGHT" and (pos % self.size) != 0:
+            new_state[pos], new_state[pos - 1] = new_state[pos - 1], new_state[pos]
+            new_state = "".join(new_state)
+        elif dir == "LEFT" and (pos % self.size) != (self.size - 1):
+            new_state[pos], new_state[pos + 1] = new_state[pos + 1], new_state[pos]
+            new_state = "".join(new_state)
         else:
             return None
         return new_state
-
-    def get_zero(self, grid):
-        x, y = None, None
-        for i in range(self.size):
-            for j in range(self.size):
-                if grid[i][j] == 0:
-                    x, y = i, j
-                    break
-            if x != None:
-                break
-        return x, y
     
+    def get_zero(self, grid):
+        return grid.index("A")
 
     def calculate_manhattan_distance(self, grid):
         manhattan_distance = 0
-        for i in range(self.size):
-            for j in range(self.size):
-                if grid[i][j] == 0:
-                    manhattan_distance += abs(self.size - 1 - j) + abs(self.size - 1 - i)
-                else:
-                    x_change = abs( (grid[i][j] - 1) % self.size - j)
-                    y_change = abs( (grid[i][j] - 1) // self.size - i)
-                    manhattan_distance += x_change + y_change
+        for i, letter in enumerate(grid):
+            x = i % self.size
+            y = i // self.size
+            if letter == "A":
+                manhattan_distance += abs(self.size - 1 - y) + abs(self.size - 1 - x)
+            else:
+                num = ord(letter) - 65
+                x_change = abs( (num - 1) % self.size - x)
+                y_change = abs( (num - 1) // self.size - y)
+                manhattan_distance += x_change + y_change
         return manhattan_distance
 
     def calculate_evaluation_function(self, grid, current_cost):
