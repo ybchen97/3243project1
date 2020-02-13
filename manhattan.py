@@ -100,7 +100,7 @@ class Puzzle(object):
             x = i % self.size
             y = i // self.size
             if letter == "A":
-                manhattan_distance += abs(self.size - 1 - y) + abs(self.size - 1 - x)
+                continue
             else:
                 num = ord(letter) - 65
                 x_change = abs( (num - 1) % self.size - x)
