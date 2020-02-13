@@ -3,6 +3,7 @@ import sys
 import copy
 import random
 import math
+from collections import deque
 
 
 class Puzzle(object):
@@ -16,7 +17,7 @@ class Puzzle(object):
     def solve(self):
         #TODO
         # implement your search algorithm here
-        frontier = [self.init_state]
+        frontier = deque([self.init_state])
         frontier_set = set([self.init_state])
         visited = set()
         parent = {self.init_state: (None, None)} #(prev_state, direction)
@@ -25,7 +26,7 @@ class Puzzle(object):
             reached_goal = True
 
         while len(frontier) > 0 and not reached_goal:
-            current_state = frontier.pop(0)
+            current_state = frontier.popleft()
             frontier_set.remove(current_state)
             visited.add(current_state)
             position = self.get_zero(current_state)
