@@ -63,22 +63,23 @@ class Puzzle(object):
         return state
 
     def grid_parity(self, state):
-        next = [-1] * len(state)
+        s = state.replace('A', '')
+        next = [-1] * len(s)
         count = 0
-        for i in state:
-            num = ord(i) - ord('A')
+        for i in s:
+            num = ord(i) - ord('A') - 1
             if next[num] != -1:
                 continue
             count += 1
             j = num
-            while ord(state[j]) - ord('A') != num:
-                next[j] = ord(state[j]) - ord('A')
+            while ord(s[j]) - ord('A') - 1 != num:
+                next[j] = ord(s[j]) - ord('A') - 1
                 j = next[j]
-            next[j] = ord(state[j]) - ord('A')
+            next[j] = ord(s[j]) - ord('A') - 1
         if self.size % 2 == 1:
-            return (len(state) - 1 - count) % 2
+            return (len(s) - count) % 2
         else:
-           return (len(state) - 1 - count + len(state) // self.get_zero(state)) % 2
+           return (len(s) - count + self.get_zero(state) // self.size) % 2
         
         
 
