@@ -11,10 +11,12 @@ class Puzzle(object):
         self.init_state = self.stringify(init_state)
         self.goal_state = self.stringify(goal_state)
         self.actions = ["DOWN", "UP", "RIGHT", "LEFT"]
-        self.size = int(math.sqrt(len(self.init_state)))
+        self.size = len(init_state)
 
     def solve(self):
         #TODO
+        if self.grid_parity(self.init_state) != self.grid_parity(self.goal_state):
+            return ['UNSOLVABLE']
         # implement your search algorithm here
         frontier = deque([self.init_state])
         frontier_set = set([self.init_state])
@@ -57,8 +59,29 @@ class Puzzle(object):
         # 65 == A, 0 -> A, 1 -> B ...
         state = ""
         for i in range(len(grid)):
-            state += "".join([chr(j + 65) for j in grid[i]])
+            state += "".join([chr(j + ord('A')) for j in grid[i]])
         return state
+
+    def grid_parity(self, state):
+        s = state.replace('A', '')
+        next = [-1] * len(s)
+        count = 0
+        for i in s:
+            num = ord(i) - ord('A') - 1
+            if next[num] != -1:
+                continue
+            count += 1
+            j = num
+            while ord(s[j]) - ord('A') - 1 != num:
+                next[j] = ord(s[j]) - ord('A') - 1
+                j = next[j]
+            next[j] = ord(s[j]) - ord('A') - 1
+        if self.size % 2 == 1:
+            return (len(s) - count) % 2
+        else:
+           return (len(s) - count + self.get_zero(state) // self.size) % 2
+        
+        
 
     def move(self, state, dir, pos):
         new_state = list(state)
