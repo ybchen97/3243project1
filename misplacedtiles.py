@@ -1,43 +1,60 @@
-import math
 import sys
-from collections import deque
+import random
+import heapq
+import math
 
 
 class Puzzle(object):
     def __init__(self, init_state, goal_state):
+        # you may add more attributes if you think is useful
+        self.size = len(init_state) # size refers to the dimension of the grid
         self.init_state = self.flatten(init_state)
         self.goal_state = self.flatten(goal_state)
         self.actions = ["DOWN", "UP", "RIGHT", "LEFT"]
-        self.size = len(init_state)
+        
 
     def solve(self):
         if self.grid_parity(self.init_state) != self.grid_parity(self.goal_state):
             return ['UNSOLVABLE']
-        
-        # Initialises the frontier for BFS
-        frontier = deque([self.init_state])
-        frontier_set = set([self.init_state])
 
-        visited = set()
+        initial_evaluation = self.calculate_evaluation_function(self.init_state, 0)
+
+        # Frontier nodes stored as a tuple:
+        # node[0] = value of f(n)
+        # node[1] = current state
+        # node[2] = value of g(n), actual cost to get from initial state to current state
+        frontier = [(initial_evaluation, self.init_state, 0)] 
+
+        # Visited stores a key-value pair, with the key being the state of the grid and value being the current lowest 
+        # value calculated by the evaluation function
+        visited = {self.init_state: initial_evaluation}
         parent = {self.init_state: (None, None)} #(prev_state, direction)
 
         while len(frontier) > 0:
-            current_state = frontier.popleft()
-            frontier_set.remove(current_state)
-            visited.add(current_state)
-            blank_tile_pos = self.get_zero(current_state)
+            # Removes the current node
+            current_node = heapq.heappop(frontier)
+            current_state = current_node[1]
 
-            for a in self.actions:
-                new_state = self.move(current_state, a, blank_tile_pos)
-                if new_state != None and new_state not in visited and new_state not in frontier_set:
-                    parent[new_state] = (current_state, a)
+            # For A* search, can only check for goal state when node is selected for expansion.
+            # Otherwise, the output path may not optimal.
+            if current_state == self.goal_state:
+                break
 
-                    # check goal state here to skip processing of nodes in queue
-                    if new_state  == self.goal_state:
-                        break
+            # Checks if the current node has the updated lower evaluation value
+            if (current_state in visited and visited[current_state] == current_node[0]) :
+                print(current_node[0])
+                position = self.get_zero(current_state)
 
-                    frontier.append(new_state)
-                    frontier_set.add(new_state)
+                for a in self.actions:
+                    new_state = self.move(current_state, a, position)
+                    if new_state != None:
+                        actual_cost = current_node[2] + 1 # Updates the actual cost required to get to current node
+                        evaluation_cost = self.calculate_evaluation_function(new_state, actual_cost)
+                        if (new_state in visited and evaluation_cost < visited[new_state]) or (new_state not in visited):
+                            # Node is only added into the frontier if the new evaluation cost is lower or has not been visited
+                            parent[new_state] = (current_state, a)
+                            visited[new_state] = evaluation_cost
+                            heapq.heappush(frontier, (evaluation_cost, new_state, actual_cost))
 
         final_answer = []
         backtrack_state = self.goal_state
@@ -49,6 +66,8 @@ class Puzzle(object):
         return final_answer
 
     # you may add more functions if you think is useful
+
+    # This function helps to convert the grid representation to a tuple representation
     def flatten(self, grid):
         flattened_grid = [0] * (self.size ** 2)
         i = 0
@@ -85,8 +104,7 @@ class Puzzle(object):
         else:
             # For even size, invariant is the parity of number of transpositions + vertical distance of blank tile
            return (len(state_list) - num_of_cycles + (self.get_zero(state) // self.size) ) % 2
-        
-        
+
     # This function helps to generate a new state by moving a tile in a particular direction into the blank tile.
     # state: the current state of the grid
     # dir: the direction in which a tile will move into the blank tile
@@ -110,8 +128,17 @@ class Puzzle(object):
             new_state[pos], new_state[pos + 1] = new_state[pos + 1], new_state[pos]
         else:
             return None
+        return tuple(new_state)
 
-        return tuple(new_state)      
+    def calculate_misplaced_tiles(self, state):
+        misplaced_tiles = 0
+        for num in state:
+            if num != 0 and state[num - 1] != num:
+                misplaced_tiles += 1
+        return misplaced_tiles
+
+    def calculate_evaluation_function(self, grid, current_cost):
+        return self.calculate_misplaced_tiles(grid) + current_cost
 
 if __name__ == "__main__":
     # do NOT modify below
@@ -162,3 +189,5 @@ if __name__ == "__main__":
     with open(sys.argv[2], 'a') as f:
         for answer in ans:
             f.write(answer+'\n')
+
+

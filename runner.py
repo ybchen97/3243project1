@@ -45,11 +45,13 @@ end = time.time()
 print("Completed.\nDuration: {0} seconds".format(round(end-start, 2)))
 
 # option to run solver to check for correctness
-if (input_num != "1"):
-    cat = subprocess.Popen(('cat', output_file), stdout=subprocess.PIPE)
-    length = subprocess.check_output(('wc', '-l'), stdin=cat.stdout)
-    cat.wait()
-    print("Solution length: " + str(length).strip())
+f = open(output_file, "r")
+lines = f.readlines()
+
+if lines[0].strip().lower() == "unsolvable":
+    print("Puzzle is unsolvable.")
+else:
+    print("Solution length: " + str(len(lines)))
     run_solver = raw_input("Run solver.py? (y/n)\n")
     if (run_solver == "y"):
         subprocess.call(["python", "solver.py", input_path, output_file])
