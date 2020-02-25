@@ -42,7 +42,6 @@ class Puzzle(object):
 
             # Checks if the current node has the updated lower evaluation value
             if (current_state in visited and visited[current_state] == current_node[0]) :
-                print(current_node[0])
                 position = self.get_zero(current_state)
 
                 for a in self.actions:

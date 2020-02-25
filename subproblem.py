@@ -1,6 +1,7 @@
 import sys
 import random
 import heapq
+import time
 from collections import deque
 
 class Puzzle(object):
@@ -12,28 +13,26 @@ class Puzzle(object):
         self.actions = ["DOWN", "UP", "RIGHT", "LEFT"]
 
         self.subset_one = ""
+        self.subset_two = ""
         if self.size == 3:
             self.subset_one = [1, 2, 3, 4]
-        else:
-            self.subset_one = [self.goal_state[self.size - 2], \
-                               self.goal_state[self.size - 1], \
-                               self.goal_state[2 * self.size - 1], \
-                               self.goal_state[3 * self.size - 1] ]
+            self.subset_two = [5, 6, 7, 8]
+        else:            
+            #get upper triangle subset
+            self.subset_one = [i for row in goal_state[:-1] for i in row[goal_state.index(row) + 1:]]
+            #get lower triangle subset
+            self.subset_two = [i for row in goal_state[1:] for i in row[:goal_state.index(row)]]
         print(self.subset_one)
+        start = time.time()
         initial_state_one = self.create_initial_state(self.subset_one)
         self.dictionary_one = self.bfs(initial_state_one, self.subset_one)
 
-        self.subset_two = ""
-        if self.size == 3:
-            self.subset_two = [5, 6, 7, 8]
-        else:
-            self.subset_two = [self.goal_state[(self.size - 1) * self.size], \
-                               self.goal_state[(self.size - 1) * self.size + 1], \
-                               self.goal_state[(self.size - 2) * self.size], \
-                               self.goal_state[(self.size - 3) * self.size]]
         print(self.subset_two)
+        mid = time.time()
         initial_state_two = self.create_initial_state(self.subset_two)
         self.dictionary_two = self.bfs(initial_state_two, self.subset_two)
+        end = time.time()
+        print("Sub 1: {:.2f}\nSub 2: {:.2f}\nTotal: {:.2f}\n".format(mid-start,end-mid,end-start))
         
 
     def solve(self):

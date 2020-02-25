@@ -5,10 +5,10 @@ from collections import deque
 
 class Puzzle(object):
     def __init__(self, init_state, goal_state):
+        self.size = len(init_state)
         self.init_state = self.flatten(init_state)
         self.goal_state = self.flatten(goal_state)
         self.actions = ["DOWN", "UP", "RIGHT", "LEFT"]
-        self.size = len(init_state)
 
     def solve(self):
         if self.grid_parity(self.init_state) != self.grid_parity(self.goal_state):
