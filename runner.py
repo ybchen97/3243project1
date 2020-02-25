@@ -48,11 +48,11 @@ print("Completed.\nDuration: {0} seconds".format(round(end-start, 2)))
 f = open(output_file, "r")
 lines = f.readlines()
 
-if lines[0].strip().lower() == "unsolvable":
-    print("Puzzle is unsolvable.")
-else:
+if len(lines) == 0 or lines[0].strip().lower() != "unsolvable":
     print("Solution length: " + str(len(lines)))
     run_solver = raw_input("Run solver.py? (y/n)\n")
     if (run_solver == "y"):
         subprocess.call(["python", "solver.py", input_path, output_file])
+else:
+    print("Puzzle is unsolvable.")
 
