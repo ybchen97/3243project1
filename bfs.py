@@ -9,7 +9,7 @@ class Puzzle(object):
         self.init_state = self.flatten(init_state)
         self.goal_state = self.flatten(goal_state)
         self.actions = ["DOWN", "UP", "RIGHT", "LEFT"]
-        
+
         # This is to keep track of the metrics for evaluation of performance
         # self.time_taken = 0
         self.number_of_nodes_expanded = 0
@@ -19,7 +19,7 @@ class Puzzle(object):
     def solve(self):
         if self.grid_parity(self.init_state) != self.grid_parity(self.goal_state):
             return ['UNSOLVABLE']
-        
+
         # Initialises the frontier for BFS
         frontier = deque([self.init_state])
         frontier_set = set([self.init_state])
@@ -27,7 +27,8 @@ class Puzzle(object):
         visited = set()
         parent = {self.init_state: (None, None)} #(prev_state, direction)
 
-        while len(frontier) > 0:
+        reached_goal = False
+        while len(frontier) > 0 and not reached_goal:
             current_state = frontier.popleft()
             frontier_set.remove(current_state)
             visited.add(current_state)
@@ -40,6 +41,7 @@ class Puzzle(object):
 
                     # check goal state here to skip processing of nodes in queue
                     if new_state  == self.goal_state:
+                        reached_goal = True
                         break
 
                     frontier.append(new_state)
