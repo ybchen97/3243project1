@@ -12,27 +12,25 @@ class Puzzle(object):
         self.goal_state = self.flatten(goal_state)
         self.actions = ["DOWN", "UP", "RIGHT", "LEFT"]
 
-        self.subset_one = ""
-        self.subset_two = ""
-        if self.size == 3:
-            self.subset_one = [1, 2, 3, 4]
-            self.subset_two = [5, 6, 7, 8]
-        else:            
-            #get upper triangle subset
-            self.subset_one = [i for row in goal_state[:-1] for i in row[goal_state.index(row) + 1:]]
-            #get lower triangle subset
-            self.subset_two = [i for row in goal_state[1:] for i in row[:goal_state.index(row)]]
-        print(self.subset_one)
-        start = time.time()
-        initial_state_one = self.create_initial_state(self.subset_one)
-        self.dictionary_one = self.bfs(initial_state_one, self.subset_one)
-
-        print(self.subset_two)
-        mid = time.time()
-        initial_state_two = self.create_initial_state(self.subset_two)
-        self.dictionary_two = self.bfs(initial_state_two, self.subset_two)
-        end = time.time()
-        print("Sub 1: {:.2f}\nSub 2: {:.2f}\nTotal: {:.2f}\n".format(mid-start,end-mid,end-start))
+        self.subset = []
+        self.dicts = []
+        #partition into 4 quadrants
+        self.subset.append(tuple([i for row in goal_state[:self.size//2] for i in row[:self.size//2]]))
+        self.subset.append(tuple([i for row in goal_state[self.size//2:] for i in row[:self.size//2]]))
+        self.subset.append(tuple([i for row in goal_state[:self.size//2] for i in row[self.size//2:]]))
+        self.subset.append(tuple([i for row in goal_state[self.size//2:] for i in \
+            row[self.size//2:self.size if goal_state.index(row) < self.size - 1 else self.size-1]]))
+        
+        print(self.subset)
+        overall_start = time.time()
+        for s in self.subset:
+            start = time.time()
+            initial_state = self.create_initial_state(s)
+            self.dicts.append(self.bfs(initial_state, s))
+            end = time.time()
+            print("Sub {}: {:.2f}".format(self.subset.index(s), end-start))
+        overall_end = time.time()
+        print("Total: {:.2f}".format(overall_end-overall_start))
         
 
     def solve(self):
@@ -189,7 +187,6 @@ class Puzzle(object):
                     if new_state != None and new_state not in dictionary:
                         dictionary[new_state] = dictionary[current_state] + 1
                         frontier.append(new_state)
-    
         return dictionary
 
     # This function helps to create the initial state based on our given subset of numbers
@@ -211,13 +208,12 @@ class Puzzle(object):
         return tuple(subpattern)
 
     def calculate_evaluation_function(self, state, current_cost):
-        subpattern_one = self.extract_subpattern(state, set(self.subset_one))
-        subpattern_two = self.extract_subpattern(state, set(self.subset_two))
         result = current_cost
-        if subpattern_one in self.dictionary_one:
-            result += self.dictionary_one[subpattern_one]
-        if subpattern_two in self.dictionary_two:
-            result += self.dictionary_two[subpattern_two]
+        for i in range(len(self.subset)):
+            s = self.subset[i]
+            subpattern = self.extract_subpattern(state, s)
+            if subpattern in self.dicts[i]:
+                result += self.dicts[i][subpattern]
         return result
 
 if __name__ == "__main__":
