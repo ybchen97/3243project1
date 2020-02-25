@@ -10,10 +10,16 @@ class Puzzle(object):
         self.goal_state = self.flatten(goal_state)
         self.actions = ["DOWN", "UP", "RIGHT", "LEFT"]
 
+        # This is to keep track of the metrics for evaluation of performance
+        # self.time_taken = 0
+        self.number_of_nodes_expanded = 0
+        self.size_of_frontier = 0
+        self.number_of_steps = 0
+
     def solve(self):
         if self.grid_parity(self.init_state) != self.grid_parity(self.goal_state):
             return ['UNSOLVABLE']
-        
+
         # Initialises the frontier for BFS
         frontier = deque([self.init_state])
         frontier_set = set([self.init_state])
@@ -47,6 +53,10 @@ class Puzzle(object):
             final_answer.insert(0, parent[backtrack_state][1])
             backtrack_state = parent[backtrack_state][0]
 
+        # keep track of stats
+        self.number_of_nodes_expanded = len(visited)
+        self.size_of_frontier = len(frontier)
+        self.number_of_steps = len(final_answer)
         print("Length of visited: {0}".format(len(visited)))
         return final_answer
 
@@ -114,6 +124,10 @@ class Puzzle(object):
             return None
 
         return tuple(new_state)      
+
+    # This function returns a list of [number_of_nodes_expanded, size_of_frontier, number_of_steps]
+    def get_statistics(self):
+        return [self.number_of_nodes_expanded, self.size_of_frontier, self.number_of_steps]
 
 if __name__ == "__main__":
     # do NOT modify below
