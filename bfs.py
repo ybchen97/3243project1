@@ -57,7 +57,7 @@ class Puzzle(object):
         self.number_of_nodes_expanded = len(visited)
         self.size_of_frontier = len(frontier)
         self.number_of_steps = len(final_answer)
-        print("Length of visited: {0}".format(len(visited)))
+        # print("Length of visited: {0}".format(len(visited)))
         return final_answer
 
     # you may add more functions if you think is useful
