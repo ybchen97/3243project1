@@ -138,22 +138,20 @@ class Puzzle(object):
             return None
         return tuple(new_state)
 
-    def calculate_manhattan_distance(self, state):
-        manhattan_distance = 0
-        for i, number in enumerate(state):
-            x = i % self.size   # Retrieves the x coordinate of the tile in the original grid
-            y = i // self.size  # Retrieves the y coordinate of the tile in the original grid
-            if number == 0:
-                # Need not account for the blank tile in the heuristic calculation
-                continue
-            else:
-                x_change = abs( (number - 1) % self.size - x)
-                y_change = abs( (number - 1) // self.size - y)
-                manhattan_distance += x_change + y_change
-        return manhattan_distance
+    def calculate_euclidean_distance(self, state):
+        euclidean_distance = 0
+
+        for index, value in enumerate(state):
+            if (value != 0):
+                dist_x = index % self.size - (value-1) % self.size
+                dist_y = index // self.size - (value-1) // self.size
+
+                euclidean_distance += math.sqrt((dist_x)**2 + (dist_y)**2)
+
+        return euclidean_distance
 
     def calculate_evaluation_function(self, state, current_cost):
-        return self.calculate_manhattan_distance(state) + current_cost
+        return self.calculate_euclidean_distance(state) + current_cost
 
     # This function returns a list of [number_of_nodes_expanded, size_of_frontier, number_of_steps]
     def get_statistics(self):
