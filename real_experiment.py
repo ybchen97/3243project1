@@ -6,9 +6,8 @@ import time
 from random import shuffle
 from random import randrange
 from bfs import Puzzle as BfsPuzzle
-from manhattan import Puzzle as ManhattanPuzzle
+from relaxedadjacency import Puzzle as RelaxedAdjacencyPuzzle
 from linearconflict import Puzzle as LinearConflictPuzzle
-from subproblem import Puzzle as SubproblemPuzzle
 from euclidean import Puzzle as EuclideanPuzzle
 
 ################### TESTCASES ######################
@@ -174,21 +173,21 @@ inputs_for_3x3 = [initial_state_3_1, initial_state_3_2, initial_state_3_3]
 inputs_for_4x4 = [initial_state_4_1, initial_state_4_2, initial_state_4_3]
 inputs_for_5x5 = [initial_state_5_1, initial_state_5_2, initial_state_5_3, initial_state_5_4, initial_state_5_5]
 
-# Run BFS, Euclidean, Manhattan, Linear Conflict on 3x3 puzzle
+# Run BFS, Euclidean, Max(Relaxed Adjacency, Manhattan), Linear Conflict on 3x3 puzzle
 print("Running 3x3 public testcases...")
-algos_3x3 = [BfsPuzzle, EuclideanPuzzle, ManhattanPuzzle, LinearConflictPuzzle]
+algos_3x3 = [BfsPuzzle, EuclideanPuzzle, RelaxedAdjacencyPuzzle, LinearConflictPuzzle]
 results_3x3 = test_algos_for_size_n(algos_3x3, inputs_for_3x3, goal_state_3)
 print("3x3 clear")
 
-# Run Euclidean, Manhattan, Linear Conflict on 4x4 puzzle
+# Run Euclidean, Max(Relaxed Adjacency, Manhattan), Linear Conflict on 4x4 puzzle
 print("Running 4x4 public testcases...")
-algos_4x4 = [ManhattanPuzzle, LinearConflictPuzzle]
+algos_4x4 = [RelaxedAdjacencyPuzzle, LinearConflictPuzzle]
 results_4x4 = test_algos_for_size_n(algos_4x4, inputs_for_4x4, goal_state_4)
 print("4x4 clear")
 
-# Run Euclidean, Manhattan, Linear Conflict on 4x4 puzzle
+# Run Euclidean, Max(Relaxed Adjacency, Manhattan), Linear Conflict on 4x4 puzzle
 print("Running 5x5 public testcases...")
-algos_5x5 = [EuclideanPuzzle, ManhattanPuzzle, LinearConflictPuzzle]
+algos_5x5 = [EuclideanPuzzle, RelaxedAdjacencyPuzzle, LinearConflictPuzzle]
 results_5x5 = test_algos_for_size_n(algos_5x5, inputs_for_5x5, goal_state_5)
 print("5x5 clear")
 
@@ -197,7 +196,7 @@ output_file = "experiment_1_output.csv"
 
 # clean previous outputs
 if os.path.isfile(output_file):
-    os.remove(output_file);
+    os.remove(output_file)
 
 delimiter = ","
 with open(output_file, 'w+') as f:
@@ -303,7 +302,7 @@ def generate_puzzles(number, size, step):
         # convert to 2D list
         puzzle = [[puzzle[i*size+j] for j in range(size)] for i in range(size)]
 
-        solver = ManhattanPuzzle(puzzle, goalstate)
+        solver = RelaxedAdjacencyPuzzle(puzzle, goalstate)
         ans = solver.solve()
         if len(ans) in count:
             count.remove(len(ans))
@@ -325,17 +324,17 @@ print("Generated random 4x4 puzzles")
 puzzles_5x5 = generate_puzzles(N, 5, step_size)
 print("Generated random 5x5 puzzles")
 
-# Run Euclidean, Manhattan, Linear Conflict on 4x4 puzzle
+# Run Euclidean, Max(Relaxed Adjacency, Manhattan), Linear Conflict on 4x4 puzzle
 print("Running 4x4 puzzles...")
 euclidean_results_4x4 = test_algos_for_size_n([EuclideanPuzzle], puzzles_4x4, goal_state_4)
-manhattan_results_4x4 = test_algos_for_size_n([ManhattanPuzzle], puzzles_4x4, goal_state_4)
+relaxed_adjacency_results_4x4 = test_algos_for_size_n([RelaxedAdjacencyPuzzle], puzzles_4x4, goal_state_4)
 lconflict_results_4x4 = test_algos_for_size_n([LinearConflictPuzzle], puzzles_4x4, goal_state_4)
 print("4x4 clear")
 
-# Run Euclidean, Manhattan, Linear Conflict on 4x4 puzzle
+# Run Euclidean, Max(Relaxed Adjacency, Manhattan), Linear Conflict on 4x4 puzzle
 print("Running 5x5 puzzles...")
 euclidean_results_5x5 = test_algos_for_size_n([EuclideanPuzzle], puzzles_5x5, goal_state_5)
-manhattan_results_5x5 = test_algos_for_size_n([ManhattanPuzzle], puzzles_5x5, goal_state_5)
+relaxed_adjacency_results_5x5 = test_algos_for_size_n([RelaxedAdjacencyPuzzle], puzzles_5x5, goal_state_5)
 lconflict_results_5x5 = test_algos_for_size_n([LinearConflictPuzzle], puzzles_5x5, goal_state_5)
 print("5x5 clear")
 
@@ -345,7 +344,7 @@ output_file = "experiment_2_output.csv"
 
 # clean previous outputs
 if os.path.isfile(output_file):
-    os.remove(output_file);
+    os.remove(output_file)
 
 delimiter = ","
 with open(output_file, 'w+') as f:
@@ -353,8 +352,8 @@ with open(output_file, 'w+') as f:
     f.write("For 4x4 inputs\n")
     f.write("Nodes expanded,Size of frontier,Number of steps,Time taken\n")
 
-    results_4x4 = [euclidean_results_4x4, manhattan_results_4x4, lconflict_results_4x4]
-    names = ["Euclidean", "Manhattan", "Linear Conflict"]
+    results_4x4 = [euclidean_results_4x4, relaxed_adjacency_results_4x4, lconflict_results_4x4]
+    names = ["Euclidean", "Max(Relaxed Adjacency, Manhattan)", "Linear Conflict"]
     for i, algo_results in enumerate(results_4x4):
         f.write(names[i] + '\n')
         for result in algo_results:
@@ -364,8 +363,8 @@ with open(output_file, 'w+') as f:
     f.write("For 5x5 inputs\n")
     f.write("Nodes expanded,Size of frontier,Number of steps,Time taken\n")
 
-    results_5x5 = [euclidean_results_5x5, manhattan_results_5x5, lconflict_results_5x5]
-    names = ["Euclidean", "Manhattan", "Linear Conflict"]
+    results_5x5 = [euclidean_results_5x5, relaxed_adjacency_results_5x5, lconflict_results_5x5]
+    names = ["Euclidean", "Max(Relaxed Adjacency, Manhattan)", "Linear Conflict"]
     for i, algo_results in enumerate(results_5x5):
         f.write(names[i] + '\n')
         for result in algo_results:
