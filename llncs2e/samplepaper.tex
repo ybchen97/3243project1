@@ -27,7 +27,7 @@ Ho Wei Haw \and
 Lee Liak Ghee \and
 Liu Zechu}
 %
-\authorrunning{F. Author et al.}
+\authorrunning{Y. Chen et al.}
 % First names are abbreviated in the running head.
 % If there are more than two authors, 'et al.' is used.
 %
@@ -38,7 +38,6 @@ Liu Zechu}
 %
 \begin{abstract}
 This paper outlines our findings and comparisons of various uninformed and informed search algorithms for solving the k-puzzle. In particular, we will be comparing various heuristics for A* search against each other and the uninformed search algorithm. 
-
 \keywords{uninformed search \and informed search}
 \end{abstract}
 %
@@ -76,7 +75,7 @@ In our analysis, we will be adopting these notations:
     \item $c(s, s')$, the cost of going from $s$ to $s'$. This is always equal to 1 in the $k$-puzzle since only 1 move can be made at each time.
 \end{enumerate}
 
-Next,we note that for a given $k$-puzzle, there are at most $k!$ states in the search space. As this is a finite search space, all of our algorithms are guaranteed to be $\mathbf{complete}$. Besides that, to detect for unsolvable initial states quickly, we made use of ideas from \cite{ref_1}. 
+Next, we note that for a given $k$-puzzle, there are at most $k!$ states in the search space. As this is a finite search space, all of our algorithms are guaranteed to be $\mathbf{complete}$. Besides that, to detect for unsolvable initial states quickly, we made use of ideas from \cite{ref_1}. 
 
 \subsection{Breadth First Search (BFS)}
 BFS is guaranteed to provide an optimal solution since all step costs are identical. Furthermore, both the time and space complexity are given by $O(4^d)$.
@@ -105,7 +104,7 @@ This heuristic involves taking the maximum of 2 heuristics, the Relaxed Adjacenc
 
 However, a proof of consistency of the Relaxed Adjacency heuristic is not provided in \cite{ref_2}. As such, we will provide a proof sketch as the proof we came up with is rather lengthy. Each state can be seen as a permutation of numbers and thus, can be expressed as a product of disjoint cycles. Moving a tile to the blank tile will either join $2$ of these cycles or break up a single cycle. This causes the minimum number of swaps to change by a value of $\pm 1$. Since $c(s, s') = 1$, this eventually causes $h(s) \leq c(s, s') + h(s')$. The full proof can be found in the Appendix.
 
-Next, the reason for taking the maximum value of both heuristic is that there are instances where one of the heuristic is larger than the other. For instance, for $k = 3$, we have the following examples:
+Next, the reason for taking the maximum value of both heuristic is that there are instances where one of the heuristics is larger than the other. For instance, for $k = 3$, we have the following examples:
 \begin{center}
     \begin{tabular}{| c | c | c |}
         \hline
