@@ -32,8 +32,8 @@ output_file = "{size}x{size}_input_{n}.out".format(size=puzzle_size, n=input_num
 
 # clean previous outputs
 if os.path.isfile(output_file):
-    subprocess.call(["rm", output_file])
-subprocess.call(["touch", output_file])
+    os.remove(output_file)
+f = open(output_file, "w+")
 
 # start a timer
 start = time.time()
@@ -45,8 +45,8 @@ end = time.time()
 print("Completed.\nDuration: {0} seconds".format(round(end-start, 2)))
 
 # option to run solver to check for correctness
-f = open(output_file, "r")
 lines = f.readlines()
+f.close()
 
 if len(lines) == 0 or lines[0].strip().lower() != "unsolvable":
     print("Solution length: " + str(len(lines)))
