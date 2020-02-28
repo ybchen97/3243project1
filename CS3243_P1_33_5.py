@@ -186,7 +186,7 @@ print("3x3 clear")
 
 # Run Euclidean, Max(Relaxed Adjacency, Manhattan), Linear Conflict on 4x4 puzzle
 print("Running 4x4 public testcases...")
-algos_4x4 = [EuclideanPuzzle, RelaxedAdjacencyPuzzle, LinearConflictPuzzle]
+algos_4x4 = [RelaxedAdjacencyPuzzle, RelaxedAdjacencyPuzzle, LinearConflictPuzzle]
 results_4x4 = test_algos_for_size_n(algos_4x4, inputs_for_4x4, goal_state_4)
 print("4x4 clear")
 
@@ -204,34 +204,39 @@ if os.path.isfile(output_file):
     os.remove(output_file)
 
 delimiter = ","
-algorithm_names = ["BFS, ""Euclidean", "Max(Relaxed Adjacency, Manhattan)", "Linear Conflict"]
+algorithm_names_for_3x3 = ["BFS", "Euclidean", "\"Max(Relaxed Adjacency, Manhattan)\"", "Linear Conflict"]
+algorithm_names_for_larger = ["Euclidean", "\"Max(Relaxed Adjacency, Manhattan)\"", "Linear Conflict"]
+table_headings = "Algorithm,Nodes expanded,Size of frontier,Number of steps,Time taken\n"
 with open(output_file, 'w+') as f:
     # 3x3
     num_algos = len(algos_3x3)
     f.write("For 3x3 inputs\n")
-    f.write("Nodes expanded,Size of frontier,Number of steps,Time taken\n")
+    f.write(table_headings)
     for count, result in enumerate(results_3x3):
         if (count % num_algos) == 0:
             f.write("Input {}\n".format(count // num_algos + 1))
-        f.write(algorithm_names[count] + delimiter + delimiter.join(str(x) for x in result) +'\n')
+        algorithm_name = algorithm_names_for_3x3[count % len(algorithm_names_for_3x3)]   
+        f.write(algorithm_name + delimiter + delimiter.join(str(x) for x in result) +'\n')
 
     # 4x4
     num_algos = len(algos_4x4)
     f.write("For 4x4 inputs\n")
-    f.write("Nodes expanded,Size of frontier,Number of steps,Time taken\n")
+    f.write(table_headings)
     for count, result in enumerate(results_4x4):
         if (count % num_algos) == 0:
             f.write("Input {}\n".format(count // num_algos + 1))
-        f.write(algorithm_names[count + 1] + delimiter + delimiter.join(str(x) for x in result) +'\n')
+        algorithm_name = algorithm_names_for_larger[count % len(algorithm_names_for_larger)]
+        f.write(algorithm_name + delimiter + delimiter.join(str(x) for x in result) +'\n')
 
     # 5x5
     num_algos = len(algos_5x5)
     f.write("For 5x5 inputs\n")
-    f.write("Nodes expanded,Size of frontier,Number of steps,Time taken\n")
+    f.write(table_headings)
     for count, result in enumerate(results_5x5):
         if (count % num_algos) == 0:
             f.write("Input {}\n".format(count // num_algos + 1))
-        f.write(algorithm_names[count + 1] + delimiter + delimiter.join(str(x) for x in result) +'\n')
+        algorithm_name = algorithm_names_for_larger[count % len(algorithm_names_for_larger)]    
+        f.write(algorithm_name + delimiter + delimiter.join(str(x) for x in result) +'\n')
 
 print("Experiment 1 completed.\n")
 
@@ -299,7 +304,7 @@ def generate_puzzles(number, size, step):
     goalstate[-1][-1] = 0
 
     puzzles = []
-    count = [i for i in range(2, number + 1, step)]
+    count = [i for i in range(1, number + 1, step)]
     while len(count) > 0:
         visited = set([start_state])
         puzzle = dfs(start_state, visited, max(count), actions)
@@ -321,7 +326,7 @@ print("BEGINNING EXPERIMENT 2:")
 print("===============================\n")
 
 # Generate puzzles
-N = 30
+N = 35
 step_size = 1
 
 puzzles_4x4 = generate_puzzles(N, 4, step_size)
