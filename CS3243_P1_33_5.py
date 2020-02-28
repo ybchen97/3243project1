@@ -5,10 +5,15 @@ import subprocess
 import time
 from random import shuffle
 from random import randrange
-from bfs import Puzzle as BfsPuzzle
-from relaxedadjacency import Puzzle as RelaxedAdjacencyPuzzle
-from linearconflict import Puzzle as LinearConflictPuzzle
-from euclidean import Puzzle as EuclideanPuzzle
+from CS3243_P1_33_1 import Puzzle as BfsPuzzle
+from CS3243_P1_33_2 import Puzzle as EuclideanPuzzle
+from CS3243_P1_33_3 import Puzzle as RelaxedAdjacencyPuzzle
+from CS3243_P1_33_4 import Puzzle as LinearConflictPuzzle
+
+"""
+To run the experiments, run ./CS3243_P1_33_5.py in the terminal.
+The experiments consist of two parts, starting from Line 164.
+"""
 
 ################### TESTCASES ######################
 
@@ -181,7 +186,7 @@ print("3x3 clear")
 
 # Run Euclidean, Max(Relaxed Adjacency, Manhattan), Linear Conflict on 4x4 puzzle
 print("Running 4x4 public testcases...")
-algos_4x4 = [RelaxedAdjacencyPuzzle, LinearConflictPuzzle]
+algos_4x4 = [EuclideanPuzzle, RelaxedAdjacencyPuzzle, LinearConflictPuzzle]
 results_4x4 = test_algos_for_size_n(algos_4x4, inputs_for_4x4, goal_state_4)
 print("4x4 clear")
 
@@ -199,6 +204,7 @@ if os.path.isfile(output_file):
     os.remove(output_file)
 
 delimiter = ","
+algorithm_names = ["BFS, ""Euclidean", "Max(Relaxed Adjacency, Manhattan)", "Linear Conflict"]
 with open(output_file, 'w+') as f:
     # 3x3
     num_algos = len(algos_3x3)
@@ -207,7 +213,7 @@ with open(output_file, 'w+') as f:
     for count, result in enumerate(results_3x3):
         if (count % num_algos) == 0:
             f.write("Input {}\n".format(count // num_algos + 1))
-        f.write(delimiter.join(str(x) for x in result) +'\n')
+        f.write(algorithm_names[count] + delimiter + delimiter.join(str(x) for x in result) +'\n')
 
     # 4x4
     num_algos = len(algos_4x4)
@@ -216,7 +222,7 @@ with open(output_file, 'w+') as f:
     for count, result in enumerate(results_4x4):
         if (count % num_algos) == 0:
             f.write("Input {}\n".format(count // num_algos + 1))
-        f.write(delimiter.join(str(x) for x in result) +'\n')
+        f.write(algorithm_names[count + 1] + delimiter + delimiter.join(str(x) for x in result) +'\n')
 
     # 5x5
     num_algos = len(algos_5x5)
@@ -225,7 +231,7 @@ with open(output_file, 'w+') as f:
     for count, result in enumerate(results_5x5):
         if (count % num_algos) == 0:
             f.write("Input {}\n".format(count // num_algos + 1))
-        f.write(delimiter.join(str(x) for x in result) +'\n')
+        f.write(algorithm_names[count + 1] + delimiter + delimiter.join(str(x) for x in result) +'\n')
 
 print("Experiment 1 completed.\n")
 
