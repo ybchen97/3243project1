@@ -12,7 +12,10 @@ from CS3243_P1_33_4 import Puzzle as LinearConflictPuzzle
 
 """
 To run the experiments, run ./CS3243_P1_33_5.py in the terminal.
-The experiments consist of two parts, starting from Line 164.
+The experiments consist of two parts, starting from Line 167.
+At the end of the experiments, two CSV files containing the
+experimental results, experiment_1_output.csv and experiment_2_output.csv,
+will be generated.
 """
 
 ################### TESTCASES ######################
