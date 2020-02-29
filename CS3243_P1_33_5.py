@@ -186,7 +186,7 @@ print("3x3 clear")
 
 # Run Euclidean, Max(Relaxed Adjacency, Manhattan), Linear Conflict on 4x4 puzzle
 print("Running 4x4 public testcases...")
-algos_4x4 = [RelaxedAdjacencyPuzzle, RelaxedAdjacencyPuzzle, LinearConflictPuzzle]
+algos_4x4 = [EuclideanPuzzle, RelaxedAdjacencyPuzzle, LinearConflictPuzzle]
 results_4x4 = test_algos_for_size_n(algos_4x4, inputs_for_4x4, goal_state_4)
 print("4x4 clear")
 
