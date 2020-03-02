@@ -60,6 +60,7 @@ class Puzzle(object):
                             parent[new_state] = (current_state, a)
                             visited[new_state] = evaluation_cost
                             heapq.heappush(frontier, (evaluation_cost, new_state, actual_cost))
+                            self.size_of_frontier = max(len(frontier), self.size_of_frontier)
 
         final_answer = []
         backtrack_state = self.goal_state
@@ -68,8 +69,9 @@ class Puzzle(object):
             backtrack_state = parent[backtrack_state][0]
 
         # keep track of stats
-        self.size_of_frontier = len(visited)
         self.number_of_steps = len(final_answer)
+        # print("max size of frontier: {0}".format(self.size_of_frontier))
+        # print("nodes expanded: {0}".format(self.number_of_nodes_expanded))
         # print("Length of visited: {0}".format(len(visited)))
         return final_answer
 

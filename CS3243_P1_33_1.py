@@ -11,7 +11,6 @@ class Puzzle(object):
         self.actions = ["DOWN", "UP", "RIGHT", "LEFT"]
 
         # This is to keep track of the metrics for evaluation of performance
-        # self.time_taken = 0
         self.number_of_nodes_expanded = 0
         self.size_of_frontier = 0
         self.number_of_steps = 0
@@ -46,6 +45,7 @@ class Puzzle(object):
 
                     frontier.append(new_state)
                     frontier_set.add(new_state)
+                    self.size_of_frontier = max(self.size_of_frontier, len(frontier))
 
         final_answer = []
         backtrack_state = self.goal_state
@@ -55,7 +55,6 @@ class Puzzle(object):
 
         # keep track of stats
         self.number_of_nodes_expanded = len(visited)
-        self.size_of_frontier = len(frontier)
         self.number_of_steps = len(final_answer)
         # print("Length of visited: {0}".format(len(visited)))
         return final_answer
