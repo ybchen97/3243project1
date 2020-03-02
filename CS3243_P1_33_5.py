@@ -3,11 +3,11 @@ import sys
 import os
 import subprocess
 import time
-from random import shuffle
+import random
 from random import randrange
 from CS3243_P1_33_1 import Puzzle as BfsPuzzle
 from CS3243_P1_33_2 import Puzzle as EuclideanPuzzle
-from CS3243_P1_33_3 import Puzzle as RelaxedAdjacencyPuzzle
+from CS3243_P1_33_3 import Puzzle as ManhattanPuzzle
 from CS3243_P1_33_4 import Puzzle as LinearConflictPuzzle
 
 """
@@ -49,21 +49,11 @@ for i in range(1, max_num + 1):
     goal_state_4[(i-1)//n][(i-1)%n] = i
 goal_state_4[n - 1][n - 1] = 0
 
-# 4x4 test case 1
-initial_state_4_1 = [[1,2,3,4],
-                     [5,6,7,8],
-                     [10,11,0,12],
-                     [9,13,15,14]]
-# 4x4 test case 2
-initial_state_4_2 = [[12,15,6,10],
-                     [4,9,5,8],
-                     [14,13,0,2],
-                     [1,7,11,3]]
-# 4x4 test case 3
-initial_state_4_3 = [[13,5,3,4],
-                     [2,1,8,0],
-                     [9,15,10,11],
-                     [14,12,6,7]]
+# 4x4 test case of 20 steps
+initial_state_4_1 = [[5,1,2,3],
+                     [7,6,8,4],
+                     [13,10,15,11],
+                     [14,0,9,12]]
 
 # 5x5
 n = 5
@@ -73,38 +63,8 @@ for i in range(1, max_num + 1):
     goal_state_5[(i-1)//n][(i-1)%n] = i
 goal_state_5[n - 1][n - 1] = 0
 
-# 5x5 test case 1
-initial_state_5_1 = [[1,2,3,4,5],
-                     [6,7,8,9,10],
-                     [11,12,0,14,15],
-                     [16,17,13,20,19],
-                     [21,22,23,18,24]]
-# 5x5 test case 2
-initial_state_5_2 = [[1,3,4,10,5],
-                     [7,2,8,0,14],
-                     [6,11,12,9,15],
-                     [16,17,13,18,19],
-                     [21,22,23,24,20]]
-# 5x5 test case 3
-initial_state_5_3 = [[1,3,4,0,10],
-                     [7,2,12,8,5],
-                     [6,11,13,15,14],
-                     [17,23,18,9,19],
-                     [16,21,22,24,20]]
-
-# 5x5 test case 4
-initial_state_5_4 = [[1,3,4,10,5],
-                     [7,2,12,8,14],
-                     [6,11,13,15,0],
-                     [17,23,18,9,19],
-                     [16,21,22,24,20]]
-
-# 5x5 test case 4
-initial_state_5_5 = [[1,2,3,4,5],
-                     [6,7,8,9,10],
-                     [11,12,14,0,15],
-                     [16,17,13,18,19],
-                     [21,22,23,24,20]]
+###################### SEEDING RANDOM GENERATOR ###############
+random.seed(30)
 
 ###################### UTILITY FUNCTIONS ######################
 # This function returns an array of [number_of_nodes_expanded, size_of_frontier, number_of_steps, time_taken]
@@ -178,26 +138,19 @@ print("BEGINNING EXPERIMENT 1:")
 print("===============================\n")
 
 inputs_for_3x3 = [initial_state_3_1, initial_state_3_2, initial_state_3_3]
-inputs_for_4x4 = [initial_state_4_1, initial_state_4_2, initial_state_4_3]
-inputs_for_5x5 = [initial_state_5_1, initial_state_5_2, initial_state_5_3, initial_state_5_4, initial_state_5_5]
+inputs_for_4x4 = [initial_state_4_1]
 
-# Run BFS, Euclidean, Max(Relaxed Adjacency, Manhattan), Linear Conflict on 3x3 puzzle
+# Run BFS, Euclidean, Manhattan, Linear Conflict on 3x3 puzzle
 print("Running 3x3 public testcases...")
-algos_3x3 = [BfsPuzzle, EuclideanPuzzle, RelaxedAdjacencyPuzzle, LinearConflictPuzzle]
+algos_3x3 = [BfsPuzzle, EuclideanPuzzle, ManhattanPuzzle, LinearConflictPuzzle]
 results_3x3 = test_algos_for_size_n(algos_3x3, inputs_for_3x3, goal_state_3)
 print("3x3 clear")
 
-# Run Euclidean, Max(Relaxed Adjacency, Manhattan), Linear Conflict on 4x4 puzzle
+# Run BFS, Euclidean, Manhattan, Linear Conflict on 4x4 puzzle
 print("Running 4x4 public testcases...")
-algos_4x4 = [EuclideanPuzzle, RelaxedAdjacencyPuzzle, LinearConflictPuzzle]
+algos_4x4 = [BfsPuzzle, EuclideanPuzzle, ManhattanPuzzle, LinearConflictPuzzle]
 results_4x4 = test_algos_for_size_n(algos_4x4, inputs_for_4x4, goal_state_4)
 print("4x4 clear")
-
-# Run Euclidean, Max(Relaxed Adjacency, Manhattan), Linear Conflict on 4x4 puzzle
-print("Running 5x5 public testcases...")
-algos_5x5 = [EuclideanPuzzle, RelaxedAdjacencyPuzzle, LinearConflictPuzzle]
-results_5x5 = test_algos_for_size_n(algos_5x5, inputs_for_5x5, goal_state_5)
-print("5x5 clear")
 
 ###### Write into a CSV file ######
 output_file = "experiment_1_output.csv"
@@ -207,8 +160,7 @@ if os.path.isfile(output_file):
     os.remove(output_file)
 
 delimiter = ","
-algorithm_names_for_3x3 = ["BFS", "Euclidean", "\"Max(Relaxed Adjacency, Manhattan)\"", "Linear Conflict"]
-algorithm_names_for_larger = ["Euclidean", "\"Max(Relaxed Adjacency, Manhattan)\"", "Linear Conflict"]
+algorithm_names = ["BFS", "Euclidean", "Manhattan", "Linear Conflict"]
 table_headings = "Algorithm,Nodes expanded,Size of frontier,Number of steps,Time taken\n"
 with open(output_file, 'w+') as f:
     # 3x3
@@ -218,7 +170,7 @@ with open(output_file, 'w+') as f:
     for count, result in enumerate(results_3x3):
         if (count % num_algos) == 0:
             f.write("Input {}\n".format(count // num_algos + 1))
-        algorithm_name = algorithm_names_for_3x3[count % len(algorithm_names_for_3x3)]   
+        algorithm_name = algorithm_names[count % len(algorithm_names)]   
         f.write(algorithm_name + delimiter + delimiter.join(str(x) for x in result) +'\n')
 
     # 4x4
@@ -228,17 +180,7 @@ with open(output_file, 'w+') as f:
     for count, result in enumerate(results_4x4):
         if (count % num_algos) == 0:
             f.write("Input {}\n".format(count // num_algos + 1))
-        algorithm_name = algorithm_names_for_larger[count % len(algorithm_names_for_larger)]
-        f.write(algorithm_name + delimiter + delimiter.join(str(x) for x in result) +'\n')
-
-    # 5x5
-    num_algos = len(algos_5x5)
-    f.write("For 5x5 inputs\n")
-    f.write(table_headings)
-    for count, result in enumerate(results_5x5):
-        if (count % num_algos) == 0:
-            f.write("Input {}\n".format(count // num_algos + 1))
-        algorithm_name = algorithm_names_for_larger[count % len(algorithm_names_for_larger)]    
+        algorithm_name = algorithm_names[count % len(algorithm_names)]
         f.write(algorithm_name + delimiter + delimiter.join(str(x) for x in result) +'\n')
 
 print("Experiment 1 completed.\n")
@@ -291,7 +233,7 @@ def generate_puzzles(number, size, step):
             return state
         pos = state.index(0)
         visited.add(state)
-        shuffle(actions)
+        random.shuffle(actions)
         for a in actions:
             new_state = move(state, a, pos)
             if new_state not in visited and new_state != None:
@@ -316,7 +258,7 @@ def generate_puzzles(number, size, step):
         # convert to 2D list
         puzzle = [[puzzle[i*size+j] for j in range(size)] for i in range(size)]
 
-        solver = RelaxedAdjacencyPuzzle(puzzle, goalstate)
+        solver = ManhattanPuzzle(puzzle, goalstate)
         ans = solver.solve()
         if len(ans) in count:
             count.remove(len(ans))
@@ -338,17 +280,17 @@ print("Generated random 4x4 puzzles")
 puzzles_5x5 = generate_puzzles(N, 5, step_size)
 print("Generated random 5x5 puzzles")
 
-# Run Euclidean, Max(Relaxed Adjacency, Manhattan), Linear Conflict on 4x4 puzzle
+# Run Euclidean, Manhattan, Linear Conflict on 4x4 puzzle
 print("Running 4x4 puzzles...")
 euclidean_results_4x4 = test_algos_for_size_n([EuclideanPuzzle], puzzles_4x4, goal_state_4)
-relaxed_adjacency_results_4x4 = test_algos_for_size_n([RelaxedAdjacencyPuzzle], puzzles_4x4, goal_state_4)
+manhattan_results_4x4 = test_algos_for_size_n([ManhattanPuzzle], puzzles_4x4, goal_state_4)
 lconflict_results_4x4 = test_algos_for_size_n([LinearConflictPuzzle], puzzles_4x4, goal_state_4)
 print("4x4 clear")
 
-# Run Euclidean, Max(Relaxed Adjacency, Manhattan), Linear Conflict on 4x4 puzzle
+# Run Euclidean, Manhattan, Linear Conflict on 4x4 puzzle
 print("Running 5x5 puzzles...")
 euclidean_results_5x5 = test_algos_for_size_n([EuclideanPuzzle], puzzles_5x5, goal_state_5)
-relaxed_adjacency_results_5x5 = test_algos_for_size_n([RelaxedAdjacencyPuzzle], puzzles_5x5, goal_state_5)
+manhattan_results_5x5 = test_algos_for_size_n([ManhattanPuzzle], puzzles_5x5, goal_state_5)
 lconflict_results_5x5 = test_algos_for_size_n([LinearConflictPuzzle], puzzles_5x5, goal_state_5)
 print("5x5 clear")
 
@@ -366,8 +308,8 @@ with open(output_file, 'w+') as f:
     f.write("For 4x4 inputs\n")
     f.write("Nodes expanded,Size of frontier,Number of steps,Time taken\n")
 
-    results_4x4 = [euclidean_results_4x4, relaxed_adjacency_results_4x4, lconflict_results_4x4]
-    names = ["Euclidean", "Max(Relaxed Adjacency, Manhattan)", "Linear Conflict"]
+    results_4x4 = [euclidean_results_4x4, manhattan_results_4x4, lconflict_results_4x4]
+    names = ["Euclidean", "Manhattan", "Linear Conflict"]
     for i, algo_results in enumerate(results_4x4):
         f.write(names[i] + '\n')
         for result in algo_results:
@@ -377,8 +319,8 @@ with open(output_file, 'w+') as f:
     f.write("For 5x5 inputs\n")
     f.write("Nodes expanded,Size of frontier,Number of steps,Time taken\n")
 
-    results_5x5 = [euclidean_results_5x5, relaxed_adjacency_results_5x5, lconflict_results_5x5]
-    names = ["Euclidean", "Max(Relaxed Adjacency, Manhattan)", "Linear Conflict"]
+    results_5x5 = [euclidean_results_5x5, manhattan_results_5x5, lconflict_results_5x5]
+    names = ["Euclidean", "Manhattan", "Linear Conflict"]
     for i, algo_results in enumerate(results_5x5):
         f.write(names[i] + '\n')
         for result in algo_results:

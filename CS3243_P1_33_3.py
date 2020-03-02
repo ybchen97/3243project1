@@ -16,7 +16,6 @@ class Puzzle(object):
         self.number_of_nodes_expanded = 0
         self.size_of_frontier = 0
         self.number_of_steps = 0
-        
 
     def solve(self):
         if self.grid_parity(self.init_state) != self.grid_parity(self.goal_state):
@@ -68,10 +67,8 @@ class Puzzle(object):
             final_answer.insert(0, parent[backtrack_state][1])
             backtrack_state = parent[backtrack_state][0]
 
-        # keep track of stats
+        # keep track of stat
         self.number_of_steps = len(final_answer)
-        # print("max size of frontier: {0}".format(self.size_of_frontier))
-        # print("nodes expanded: {0}".format(self.number_of_nodes_expanded))
         # print("Length of visited: {0}".format(len(visited)))
         return final_answer
 
@@ -140,61 +137,6 @@ class Puzzle(object):
             return None
         return tuple(new_state)
 
-    # This function helps to check if the given tile is at its correct position.
-    # The blank tile is represented by the number k^2 for convenience in calculations.
-    # tile: the tile to be checked and should be between 1 and k^2 inclusive.
-    # tile_pos: the position of the tile in the tuple representation.
-    def is_in_correct_position(self, tile, tile_pos):
-        # For nonzero tiles i, it should be at the index i - 1.
-        return tile_pos == tile - 1
-
-    # This function helps to calculate the minimum number of moves to the blank tiles
-    # needed to return the tiles to the goal position.
-    def calculate_swaps_required(self, state):
-        swaps_required = 0
-
-        state_list = []
-
-        # This helps to transfer the state tuple to a list while changing 0 to k^2.
-        # In other words, it duplicates the state tuple into a list and uses k^2 to represent the blank tile.
-        # This is done to make calculations easier later.
-        for i in range(self.size ** 2):
-            if state[i] == 0:
-                state_list.append(self.size ** 2)
-            else:
-                state_list.append(state[i])
-
-        # has_visited[i - 1] returns False if tile i has not been visited.
-        has_visited = [False] * len(state_list)
-        for idx, tile in enumerate(state_list):
-            # If has_visited[i - 1] is False,then tile i is not part of a previously known cycle.
-            # So we will determine the possible cycle it is part of.
-            if not has_visited[tile - 1]:
-                has_visited[tile - 1] = True
-                # Only tiles that are not in its correct position has to be moved to the blank tile.
-                if not self.is_in_correct_position(tile, idx):
-                    # We then determine what numbers are part of the cycle of this tile.
-                    # If the blank tile is part of the cycle, we don't have to perform an extra move
-                    # by moving any tile in the cycle to the blank tile.
-                    includes_blank_tile = False
-                    cycle_len = 1
-                    next_in_cycle = tile
-                    # This loop continues as long as the cycle has not returned
-                    # to the original starting tile.
-                    while state_list[next_in_cycle - 1] != tile:
-                        # If the number k^2 is part of the cycle, then the cycle includes the blank tile.
-                        if next_in_cycle == self.size ** 2:
-                            includes_blank_tile = True
-                        next_in_cycle = state_list[next_in_cycle - 1]
-                        has_visited[next_in_cycle - 1] = True
-                        cycle_len += 1
-
-                    if includes_blank_tile:
-                        swaps_required += cycle_len - 1
-                    else:
-                        swaps_required += cycle_len + 1
-        return swaps_required
-
     def calculate_manhattan_distance(self, state):
         manhattan_distance = 0
         for i, number in enumerate(state):
@@ -210,7 +152,7 @@ class Puzzle(object):
         return manhattan_distance
 
     def calculate_evaluation_function(self, state, current_cost):
-        return max(self.calculate_swaps_required(state), self.calculate_manhattan_distance(state)) + current_cost
+        return self.calculate_manhattan_distance(state) + current_cost
 
     # This function returns a list of [number_of_nodes_expanded, size_of_frontier, number_of_steps]
     def get_statistics(self):
