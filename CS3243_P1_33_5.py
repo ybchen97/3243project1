@@ -50,10 +50,10 @@ for i in range(1, max_num + 1):
 goal_state_4[n - 1][n - 1] = 0
 
 # 4x4 test case of 20 steps
-initial_state_4_1 = [[5,1,2,3],
-                     [7,6,8,4],
-                     [13,10,15,11],
-                     [14,0,9,12]]
+initial_state_4_custom = [[5,1,2,3],
+                          [7,6,8,4],
+                          [13,10,15,11],
+                          [14,0,9,12]]
 
 # 5x5
 n = 5
@@ -133,12 +133,13 @@ algorithms work as expected (BFS is only tested for 3x3 puzzles). Note that the
 results for unsolvable cases will be 0.
 """
 
+print("\nThis script takes around 2-3 mins to complete.")
 print("\n===============================")
 print("BEGINNING EXPERIMENT 1:")
 print("===============================\n")
 
 inputs_for_3x3 = [initial_state_3_1, initial_state_3_2, initial_state_3_3]
-inputs_for_4x4 = [initial_state_4_1]
+inputs_for_4x4 = [initial_state_4_custom]
 
 # Run BFS, Euclidean, Manhattan, Linear Conflict on 3x3 puzzle
 print("Running 3x3 public testcases...")
@@ -147,7 +148,7 @@ results_3x3 = test_algos_for_size_n(algos_3x3, inputs_for_3x3, goal_state_3)
 print("3x3 clear")
 
 # Run BFS, Euclidean, Manhattan, Linear Conflict on 4x4 puzzle
-print("Running 4x4 public testcases...")
+print("Running 4x4 custom testcase...")
 algos_4x4 = [BfsPuzzle, EuclideanPuzzle, ManhattanPuzzle, LinearConflictPuzzle]
 results_4x4 = test_algos_for_size_n(algos_4x4, inputs_for_4x4, goal_state_4)
 print("4x4 clear")
