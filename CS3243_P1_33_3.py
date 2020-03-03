@@ -69,7 +69,6 @@ class Puzzle(object):
 
         # keep track of stat
         self.number_of_steps = len(final_answer)
-        # print("Length of visited: {0}".format(len(visited)))
         return final_answer
 
     # you may add more functions if you think is useful
@@ -207,10 +206,3 @@ if __name__ == "__main__":
     with open(sys.argv[2], 'a') as f:
         for answer in ans:
             f.write(answer+'\n')
-
-
-
-
-
-
-
