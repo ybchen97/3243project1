@@ -1,50 +1,24 @@
 For 3x3 inputs
-Nodes expanded,Size of frontier,Number of steps,Time taken
+Algorithm,Nodes expanded,Size of frontier,Number of steps,Time taken
 Input 1
-0,0,0,0.0
-0,0,0,0.0
-0,0,0,0.0
-0,0,0,0.0
+BFS,0,0,0,0.0
+Euclidean,0,0,0,0.0
+Manhattan,0,0,0,0.0
+Linear Conflict,0,0,0,0.0
 Input 2
-56830,18100,22,0.456
-2063,1201,22,0.068
-997,575,22,0.035
-697,412,22,0.071
+BFS,56830,18101,22,0.385
+Euclidean,2063,1201,22,0.048
+Manhattan,1011,585,22,0.019
+Linear Conflict,697,412,22,0.055
 Input 3
-181347,91,31,1.142
-38487,16014,31,0.957
-7088,3570,31,0.255
-4140,2176,31,0.294
+BFS,181347,25134,31,1.098
+Euclidean,38487,16014,31,0.9
+Manhattan,7131,3573,31,0.154
+Linear Conflict,4140,2176,31,0.301
 For 4x4 inputs
-Nodes expanded,Size of frontier,Number of steps,Time taken
+Algorithm,Nodes expanded,Size of frontier,Number of steps,Time taken
 Input 1
-0,0,0,0.0
-0,0,0,0.0
-Input 2
-47754,42126,50,2.653
-12520,11390,50,1.725
-Input 3
-11391,10608,34,0.635
-3333,3167,34,0.518
-For 5x5 inputs
-Nodes expanded,Size of frontier,Number of steps,Time taken
-Input 1
-297,382,14,0.015
-216,280,14,0.017
-135,181,14,0.048
-Input 2
-56,77,18,0.003
-27,39,18,0.002
-26,38,18,0.009
-Input 3
-23560,28100,33,1.328
-3427,4046,33,0.32
-786,948,33,0.263
-Input 4
-3315,4093,30,0.173
-426,523,30,0.034
-275,347,30,0.083
-Input 5
-5,11,5,0.0
-5,11,5,0.0
-5,11,5,0.002
+BFS,1999561,1832601,20,23.507
+Euclidean,158,165,20,0.007
+Manhattan,75,81,20,0.003
+Linear Conflict,53,65,20,0.011
